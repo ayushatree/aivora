@@ -1,0 +1,225 @@
+(function ($) {
+    "use strict";
+
+    function marqueeLeft($scope, $) {
+        $('.marquee-left').marquee({
+            speed: 20,
+            gap: 0,
+            delayBeforeStart: 0,
+            direction: 'left',
+            duplicated: true,
+            pauseOnHover: false,
+            startVisible: true,
+        });
+    }
+    function featureMarquee($scope, $) {
+        $('.marquee-right').marquee({
+            speed: 20,
+            gap: 0,
+            delayBeforeStart: 0,
+            direction: 'right',
+            duplicated: true,
+            pauseOnHover: false,
+            startVisible: true,
+        });
+    }
+    function contactCounter($scope, $) {
+        if ($(".xbo").length) {
+            $('.xbo').appear();
+            $(document.body).on('appear', '.xbo', function (e) {
+                var odo = $(".xbo");
+                odo.each(function () {
+                    var countNumber = $(this).attr("data-count");
+                    $(this).html(countNumber);
+                });
+                window.xboOptions = {
+                    format: 'd',
+                };
+            });
+        }
+    }
+    function testimonialSlider($scope, $) {
+        var slider = new Swiper(".xb-testimonial-slider", {
+            loop: true,
+            speed: 400,
+            spaceBetween: 30,
+            slidesPerView: 5,
+            centeredSlides: false,
+            autoplay: {
+                enabled: true,
+                delay: 6000
+            },
+            breakpoints: {
+                '1700': {
+                    slidesPerView: 5,
+                },
+                '1600': {
+                    slidesPerView: 4,
+                },
+                '1024': {
+                    slidesPerView: 3,
+                },
+                '768': {
+                    slidesPerView: 2,
+                },
+                '576': {
+                    slidesPerView: 1,
+                },
+                '0': {
+                    slidesPerView: 1,
+                },
+            },
+        });
+    }
+    function testimonialSliderV3($scope, $) {
+        var slider = new Swiper(".ac-testimonial-slider", {
+            loop: true,
+            speed: 400,
+            spaceBetween: 30,
+            slidesPerView: 3,
+            centeredSlides: false,
+            autoplay: {
+                enabled: true,
+                delay: 6000
+            },
+            breakpoints: {
+                '1600': {
+                    slidesPerView: 3,
+                },
+                '1200': {
+                    slidesPerView: 3,
+                },
+                '1024': {
+                    slidesPerView: 1,
+                },
+                '768': {
+                    slidesPerView: 1,
+                },
+                '576': {
+                    slidesPerView: 1,
+                },
+                '0': {
+                    slidesPerView: 1,
+                },
+            },
+        });
+    }
+    function projectSlider($scope, $) {
+        let tl = gsap.timeline();
+        let pr = gsap.matchMedia();
+        pr.add("(min-width: 767px)", () => {
+            let otherSections = document.querySelectorAll('.des-portfolio-panel')
+            otherSections.forEach((section, index) => {
+                gsap.set(otherSections, {
+                    scale: 1,
+                });
+                tl.to(section, {
+                    scale: .8,
+                    scrollTrigger: {
+                        trigger: section,
+                        pin: section,
+                        scrub: 1,
+                        start: 'top 0',
+                        end: "bottom 60%",
+                        endTrigger: '.des-portfolio-wrap',
+                        pinSpacing: false,
+                        markers: false,
+                    },
+                })
+            })
+        });
+    }
+
+
+    function awardSection($scope, $) {
+        $("[data-background]").each(function () {
+            $(this).css("background-image", "url(" + $(this).attr("data-background") + ") ")
+        })
+    }
+    function headerLanguage($scope, $) {
+        function getFlagSrc(countryCode) {
+            return /^[A-Z]{2}$/.test(countryCode)
+                ? `https://flagsapi.com/${countryCode.toUpperCase()}/shiny/64.png`
+                : "";
+        }
+        $(document).ready(function () {
+            // Exit early if 'locales' or 'currentURL' is not defined
+            if (typeof locales === "undefined" || !Array.isArray(locales) || locales.length === 0) return;
+            if (typeof currentURL === "undefined") return;
+
+            function setSelectedLocale(locale) {
+                try {
+                    const intlLocale = new Intl.Locale(locale);
+                    const $dropdownContent = $("#language_dropdown > ul");
+                    $dropdownContent.empty();
+
+                    const otherLocales = locales.filter(loc => loc !== locale);
+                    $.each(otherLocales, function (index, otherLocale) {
+                        try {
+                            const otherIntlLocale = new Intl.Locale(otherLocale);
+                            const otherLangName = new Intl.DisplayNames([otherLocale], { type: "language" }).of(otherIntlLocale.language);
+
+                            const langCode = otherLocale.split("-")[0]; // For ?lang=XX
+                            const updatedURL = updateQueryStringParameter(currentURL, 'lang', langCode);
+
+                            const $listEl = $("<li>").html(`${otherLangName} <img src="${getFlagSrc(otherIntlLocale.region)}" />`);
+                            $listEl.on("mousedown", function () {
+                                window.location.href = updatedURL;
+                            });
+
+                            $dropdownContent.append($listEl);
+                        } catch (e) {
+                            console.warn("Locale processing error:", e);
+                        }
+                    });
+
+                    $("#language_active_btn").html(`<span><img src="${getFlagSrc(intlLocale.region)}" /></span> <i class="fa-solid fa-angle-down"></i>`);
+                } catch (e) {
+                    console.warn("Invalid locale:", locale);
+                }
+            }
+            function updateQueryStringParameter(uri, key, value) {
+                var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+                var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+                if (uri.match(re)) {
+                    return uri.replace(re, '$1' + key + "=" + value + '$2');
+                } else {
+                    return uri + separator + key + "=" + value;
+                }
+            }
+            // Default Selected Locale
+            const defaultLocale = typeof currentLocale !== "undefined"
+                ? locales.find(loc => loc.startsWith(currentLocale)) || locales[0]
+                : locales[0];
+
+            setSelectedLocale(defaultLocale);
+
+            // Browser Language Auto-Detect (Optional)
+            if (typeof currentLocale === "undefined") {
+                const browserLang = new Intl.Locale(navigator.language).language;
+                $.each(locales, function (index, locale) {
+                    const localeLang = new Intl.Locale(locale).language;
+                    if (localeLang === browserLang) {
+                        const updatedURL = updateQueryStringParameter(currentURL, 'lang', localeLang);
+                        window.location.href = updatedURL;
+                        return false;
+                    }
+                });
+            }
+        });
+    }
+    
+    $(window).on('elementor/frontend/init', function () {
+        if (elementorFrontend.isEditMode()) {
+            elementorFrontend.hooks.addAction('frontend/element_ready/int-about.default', marqueeLeft);
+            elementorFrontend.hooks.addAction('frontend/element_ready/int-feature-v2.default', featureMarquee);
+            elementorFrontend.hooks.addAction('frontend/element_ready/int-contact.default', contactCounter);
+            elementorFrontend.hooks.addAction('frontend/element_ready/int-testimonial.default', testimonialSlider);
+            elementorFrontend.hooks.addAction('frontend/element_ready/int-awards.default', awardSection);
+            elementorFrontend.hooks.addAction('frontend/element_ready/int-testimonial-v3.default', testimonialSliderV3);
+            elementorFrontend.hooks.addAction('frontend/element_ready/int-project-v2.default', projectSlider);
+            elementorFrontend.hooks.addAction('frontend/element_ready/int-hero-three.default', headerLanguage);
+        }
+    });
+
+})(jQuery);
